@@ -1,136 +1,74 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-interface BooksContextData {
-  getAllBooks(): Promise<void>;
-  filterBooksByOption(option: string[]): Promise<void>;
-  searchBooks(text: string): Promise<void>;
-  books: BooksData[];
-  filterBooks: BooksData[];
-  loading: boolean;
-  notFound: boolean;
+interface RankingContextData {
+  existUser(idUser: String): void;
+  addNewUser(userToRanking: Ranking): void;
+  updatePoints(idUser: String, points: Number): void;
+  rankingList: Array<Ranking>;
+  loading: Boolean;
 }
 
-interface BooksState {}
+interface RankingState {}
 
-interface BooksData {
-  id: string;
-  title: string;
-  description: string;
-  authors: string[];
-  pageCount: string;
-  category: string;
-  imageUrl: string;
-  isbn10: string;
-  isbn13: string;
-  language: string;
-  publisher: string;
-  published: string;
+interface Ranking {
+  id: String;
+  username: String;
+  points: Number;
 }
 
-const BooksContext = createContext<BooksContextData>({} as BooksContextData);
+const RankingContext = createContext<RankingContextData>({} as RankingContextData);
 
-export const BooksProvider: React.FC = ({children}) => {
-  const {authorization} = useAuth();
-
-  const [arrayAux, setArrayAux] = useState<BooksData[]>([]);
-  const [booksAux, setBooksAux] = useState<BooksData[]>([]);
-  const [books, setBooks] = useState<BooksData[]>([]);
+export const RankingProvider = ({ children }: any) => {
+  // const dale =[{id: "111111", username: "Marcelo", points: 100}] as Ranking[]
+  const [rankingList, setRankingList] = useState<Ranking[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
-  const [notFound, setNotFound] = useState<boolean>(false);
 
-  async function getAllBooks() {
+  function existUser(idUser: String) {
+    const user = rankingList.findIndex((user) => user.id == idUser);
+    if (user != -1) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function addNewUser(userToRanking: Ranking) {
+    setLoading(true);
+    setRankingList((oldvalue) => [...oldvalue, userToRanking]);
+    setLoading(false);
+  }
+
+  function updatePoints(idUser: String, points: Number) {
     setLoading(true);
 
-    const responseBooks: AxiosResponse = await api.get(
-      `books?page=${page}&amount=8`,
-      {
-        headers: {
-          Authorization: `Bearer ${authorization}`,
-        },
+    const newRankingList: Array<Ranking> = rankingList.map((user) => {
+      if (user.id == idUser) {
+        user.points = points;
       }
-    );
+      return user;
+    });
 
-    const {data} = responseBooks.data;
-
-    setBooks([...books, ...data]);
-
-    setPage(oldValue => oldValue + 1);
+    setRankingList(newRankingList);
 
     setLoading(false);
   }
 
-  async function filterBooksByOption(option: string[]) {
-    console.log(option);
-  }
-
-  async function searchBooks(text: string) {
-    setLoading(true);
-
-    if (text === '') {
-      setNotFound(false);
-      setBooksAux([]);
-    } else {
-      if (arrayAux.length === 0) {
-        const responseBooks: AxiosResponse = await api.get(
-          `books?page=${1}&amount=500`,
-          {
-            headers: {
-              Authorization: `Bearer ${authorization}`,
-            },
-          }
-        );
-
-        const {data} = responseBooks.data;
-
-        const books: BooksData[] = data;
-
-        const newArray: BooksData[] = books;
-
-        setArrayAux(newArray);
-        handleSearch(text, newArray);
-      } else {
-        handleSearch(text, arrayAux);
-      }
-
-      setLoading(false);
-    }
-  }
-
-  function handleSearch(text: string, newArray: BooksData[]) {
-    let aux = newArray.filter(item => {
-      let titleBook = item.title.toLowerCase();
-
-      if (text !== ' ') {
-        return titleBook.startsWith(text.toLowerCase());
-      }
-    });
-
-    if (aux.length === 0) {
-      setNotFound(true);
-    } else {
-      setBooksAux(aux);
-    }
-  }
-
   return (
-    <BooksContext.Provider
-      value={{
-        books: books || [],
-        filterBooks: booksAux || [],
-        notFound: notFound,
-        loading,
-        getAllBooks,
-        filterBooksByOption,
-        searchBooks,
-      }}>
+    <RankingContext.Provider value={{
+        existUser,
+        addNewUser,
+        updatePoints,
+        rankingList,
+        loading
+    }}>
       {children}
-    </BooksContext.Provider>
+    </RankingContext.Provider>
   );
 };
 
-export function useBooks(): BooksContextData {
-  const context = useContext(BooksContext);
+export function useRanking(): RankingContextData {
+  const context = useContext(RankingContext);
 
   return context;
 }
+
