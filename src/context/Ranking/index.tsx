@@ -4,13 +4,14 @@ interface RankingContextData {
   existUser(idUser: String): void;
   addNewUser(userToRanking: Ranking): void;
   updatePoints(idUser: String, points: Number): void;
+  fetchUser(): void;
   rankingList: Array<Ranking>;
   loading: Boolean;
 }
 
 interface RankingState {}
 
-interface Ranking {
+export interface Ranking {
   id: String;
   username: String;
   points: Number;
@@ -19,9 +20,13 @@ interface Ranking {
 const RankingContext = createContext<RankingContextData>({} as RankingContextData);
 
 export const RankingProvider = ({ children }: any) => {
-  // const dale =[{id: "111111", username: "Marcelo", points: 100}] as Ranking[]
-  const [rankingList, setRankingList] = useState<Ranking[]>([]);
+  const dale =[{id: "111111", username: "Marcelo", points: 100}] as Ranking[]
+  const [rankingList, setRankingList] = useState<Ranking[]>(dale);
   const [loading, setLoading] = useState<boolean>(false);
+
+  function fetchUser() {
+
+  }
 
   function existUser(idUser: String) {
     const user = rankingList.findIndex((user) => user.id == idUser);
@@ -58,6 +63,7 @@ export const RankingProvider = ({ children }: any) => {
         existUser,
         addNewUser,
         updatePoints,
+        fetchUser,
         rankingList,
         loading
     }}>
