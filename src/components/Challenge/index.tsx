@@ -6,16 +6,18 @@ export type ChallengeProps = {
   status: ChallengeStatus;
   imageSource?: string;
   score: string;
+  onChallengeClick: () => void;
 };
 
 export function Challenge({
   status = ChallengeStatus.DISABLED,
   imageSource,
-  score
+  score,
+  onChallengeClick
 }: ChallengeProps) {
   return (
     <Container>
-      <Button>
+      <Button onPress={onChallengeClick}>
         <Image source={imageSource} status={status} />
       </Button>
       <ScoreText status={status}>{score}</ScoreText>

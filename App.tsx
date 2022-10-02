@@ -7,6 +7,7 @@ import { Poppins_400Regular, Poppins_500Medium, Poppins_700Bold } from '@expo-go
 import * as Font from 'expo-font';
 import { Routes } from './src/routes';
 import { theme } from './src/global/styles/theme';
+import { ChallengesProvider } from './src/contexts/ChallengesContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,14 +44,16 @@ export default function App() {
   }
   return (
     <ThemeProvider theme={theme}>
-      <View
-        onLayout={onLayoutRootView}
-        style={{
-          flex: 1,
-          marginTop: StatusBar.currentHeight
-        }}>
-        <Routes />
-      </View>
+      <ChallengesProvider>
+        <View
+          onLayout={onLayoutRootView}
+          style={{
+            flex: 1,
+            marginTop: StatusBar.currentHeight
+          }}>
+          <Routes />
+        </View>
+      </ChallengesProvider>
       <StatusBar translucent barStyle="light-content" />
     </ThemeProvider>
   );
