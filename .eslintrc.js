@@ -1,3 +1,4 @@
+// ! TODO: check no-unused-var rule
 module.exports = {
   env: {
     es2021: true
@@ -39,6 +40,13 @@ module.exports = {
         ts: 'never',
         tsx: 'never'
       }
-    ]
+    ],
+    camelcase: 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'no-unused-vars': 'off',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    'import/no-cycle': 'off',
+    'global-require': 'off'
   }
 };
